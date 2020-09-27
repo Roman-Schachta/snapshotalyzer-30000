@@ -1,4 +1,5 @@
 import boto3
+import botocore
 import click
 
 session=boto3.Session()
@@ -111,7 +112,11 @@ def stop_instances(project):
     instances=filter_instances(project)
     for i in instances:
         print("Stopping {0}...".format(i.id))
-        i.stop()
+        try:
+            i.stop()
+        except botocore.exceptions.ClientError as e:
+            print("could not stop {0}.".format(i.id) + str(e))
+            continue
 
     return
 
